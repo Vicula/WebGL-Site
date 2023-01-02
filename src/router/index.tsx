@@ -1,12 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
-
 import HomePage from "@/pages/HomePage.vue";
 
+// For lazy loading components
 function lazyView(view: string) {
   return () =>
-    import(
-      /* webpackChunkName: "lazy-view-[request]" */ `@/pages/${view}.vue`
-    );
+    import(/* webpackChunkName: "lazy-view-[request]" */ `@/pages/${view}.vue`);
 }
 
 export const routes = [
@@ -14,13 +12,10 @@ export const routes = [
     path: "/",
     name: "home-page",
     component: HomePage,
+    meta: {
+      Placeholder: HomePage.Placeholder,
+    },
   },
-  // For lazy loading components
-  /* {
-    path: '/',
-    name: 'home-page',
-    component: () => import('@/pages/HomePage.vue'),
-  }, */
 ];
 
 export const router = createRouter({

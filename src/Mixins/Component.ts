@@ -5,17 +5,16 @@
  ==============================================================================
  * @attention
  *
- * Copyright (c) International Market Centers, LLC
+ * Copyright (c) Victor Carpenter D.B.A., Cattail Digital, LLC 
  * All rights reserved.
  *
  ==============================================================================
  */
-import { Vue } from "vue-class-component";
 
 export function Component<T>(...args: any[]) {
-  return class Component extends Vue {
+  return class Component {
     public addComposables() {
-      return class _Component extends Component {};
+
     }
   };
 }

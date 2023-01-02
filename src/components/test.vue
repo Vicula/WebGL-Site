@@ -9,7 +9,7 @@
  ==============================================================================
  */
 export default {
-  placeholder: (
+  Placeholder: (
     <div class="test-placeholder">
       <AnimatedPlaceholder height="25px" width="100px" />
       <br />
@@ -19,6 +19,8 @@ export default {
     </div>
   ),
 };
+
+import { Utils } from "@/utils";
 </script>
 
 <template>
@@ -31,7 +33,6 @@ export default {
 
 <script setup lang="tsx">
 import { AnimatedPlaceholder } from "@/components";
-import { Utils } from "@/utils";
 
 await Utils.sleep(10000);
 

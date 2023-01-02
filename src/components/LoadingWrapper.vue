@@ -43,6 +43,7 @@ import {
  */
 
 export interface IProps {
+  placeholder?: JSX.Element | DefineComponent<{}, {}, {}, {}, {}>;
   retry?: boolean;
   ssrOnly?: boolean;
   whenIdle?: boolean;
@@ -58,12 +59,11 @@ const props = defineProps<IProps>();
  * @consts
  ------------------------------------------------------------------------------
  */
-
 // const ViewA = defineAsyncComponent(() => import("./components/ViewA.vue"));
 const slots = useSlots(),
   defaultSlot = slots.default?.()[0],
-  slotType = defaultSlot?.type as DefineComponent | undefined,
-  Placeholder = slotType?.placeholder,
+  slotType = defaultSlot?.type as DefineComponent,
+  Placeholder = props.placeholder ?? slotType?.Placeholder,
   placeholderDataId: string = slotType?.__scopeId,
   error: Ref<Error | null> = ref(null);
 
@@ -73,11 +73,8 @@ defaultSlot && !defaultSlot.dirs && (defaultSlot.dirs = []);
  * @hooks
  ------------------------------------------------------------------------------
  */
-
-
 onErrorCaptured(
   (err: Error, instance: ComponentPublicInstance | null, info: string) => {
-
     error.value = err;
   }
 );
@@ -87,5 +84,6 @@ defineExpose({
    * Here we can doc exposed properties
    */
   error,
+  Placeholder,
 });
 </script>

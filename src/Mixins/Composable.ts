@@ -5,7 +5,7 @@
  ==============================================================================
  * @attention
  *
- * Copyright (c) International Market Centers, LLC
+ * Copyright (c) Victor Carpenter D.B.A., Cattail Digital, LLC 
  * All rights reserved.
  *
  ==============================================================================

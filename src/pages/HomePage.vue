@@ -8,7 +8,11 @@
  ==============================================================================
  */
 export default {
-  placeholder: <div class="homepage-placeholder">It is loading</div>,
+  Placeholder: (
+    <div class="homepage-placeholder">
+      <h1>It is loading</h1>
+    </div>
+  ),
 };
 </script>
 
@@ -25,7 +29,17 @@ import { LoadingWrapper, Test } from "@/components";
 import { ref } from "vue";
 import { Utils } from "@/utils";
 
-// await Utils.sleep(5000);
+await Utils.sleep(5000);
 
 const loadingRef = ref<InstanceType<typeof LoadingWrapper> | null>(null);
+
+defineExpose({
+  loadingRef,
+});
 </script>
+
+<style lang="scss" scoped>
+.homepage-placeholder {
+  color: red;
+}
+</style>
