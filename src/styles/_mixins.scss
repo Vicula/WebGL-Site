@@ -1,0 +1,22 @@
+/*
+==============================================================================
+ * @Layer   Mixins
+ * @brief   global utility mixins 
+==============================================================================
+ */
+
+//Creates a general block selector for BEM convections
+@mixin Block($Selector, $Element: div, $te: false, $tw: false) {
+  // selects all elements whose class attribute starts with the
+  // selector string and removes all block elements
+  #{$Element}[class|="#{$Selector}"] {
+    // applies the content passed to it and returns a reference to itself
+    @content;
+  }
+}
+
+@mixin NoModifiers {
+}
+
+@mixin NoElements {
+}

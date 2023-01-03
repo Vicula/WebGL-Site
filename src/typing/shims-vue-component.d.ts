@@ -7,7 +7,7 @@ import {
 
 declare module "vue" {
   interface ComponentCustomOptions {
-    Placeholder?: JSX.Element | DefineComponent<{}, {}, {}, {}, {}>;
+    Skeleton?: JSX.Element | DefineComponent<{}, {}, {}, {}, {}>;
   }
 
   interface ComponentCustomProperties { }

@@ -7,6 +7,10 @@
  *            fallback displays
  * 
 ==============================================================================
+ *
+ * @emits completed: called when loading is done and the default slot is shown
+ *
+==============================================================================
 */
 export default {};
 </script>
@@ -16,11 +20,15 @@ export default {};
     <span v-if="retry">Retry</span>
     <span v-else>{{ error }}</span>
   </section>
-  <Suspense v-else>
+  <Suspense v-else @resolve="onResolved">
     <slot />
     <template #fallback>
       <section class="loading-wrapper">
-        <Placeholder v-if="Placeholder" v-bind="{ [placeholderDataId]: '' }" />
+        <Placeholder
+          v-if="Placeholder"
+          :name="slotName"
+          v-bind="{ [placeholderDataId]: '' }"
+        />
         <span v-else>Loading...</span>
       </section>
     </template>
@@ -32,6 +40,7 @@ import {
   useSlots,
   ref,
   onErrorCaptured,
+  getCurrentInstance,
   type Ref,
   type DefineComponent,
   type ComponentPublicInstance,
@@ -56,14 +65,30 @@ export interface IProps {
 const props = defineProps<IProps>();
 
 /**
+ * @events
+ ------------------------------------------------------------------------------
+ */
+
+const events = defineEmits(["completed"]),
+  onResolved = () => {
+    events("completed");
+  };
+
+/**
  * @consts
  ------------------------------------------------------------------------------
  */
-// const ViewA = defineAsyncComponent(() => import("./components/ViewA.vue"));
+// fetch the component slots then drill down to
+// the default slot
 const slots = useSlots(),
   defaultSlot = slots.default?.()[0],
   slotType = defaultSlot?.type as DefineComponent,
-  Placeholder = props.placeholder ?? slotType?.Placeholder,
+  // here we are getting a slotName from the file of the
+  // parent component
+  slotName = slotType.__file?.replace(/^.*[\\\/]/, "").replace(/\.[^/.]+$/, ""),
+  //Getting the placeholder info from the slot
+  // or using a passed prop
+  Placeholder = props.placeholder ?? slotType?.Skeleton,
   placeholderDataId: string = slotType?.__scopeId,
   error: Ref<Error | null> = ref(null);
 

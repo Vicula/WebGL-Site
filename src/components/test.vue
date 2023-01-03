@@ -9,40 +9,55 @@
  ==============================================================================
  */
 export default {
-  Placeholder: (
-    <div class="test-placeholder">
-      <AnimatedPlaceholder height="25px" width="100px" />
-      <br />
-      <AnimatedPlaceholder height="25px" width="100px" />
-      <br />
-      <AnimatedPlaceholder height="25px" width="100px" />
-    </div>
+  Skeleton: (
+    // <div class="test-placeholder">
+    <Skeleton height="200vh" width="100%">
+      <Skeleton height="100vh" width="50%">
+        <Skeleton height="25px" width="100px" />
+        <br />
+        <Skeleton height="25px" width="100px" />
+        <br />
+        <Skeleton height="25px" width="100px" />
+      </Skeleton>
+      <Skeleton height="100vh" width="50%">
+        <Skeleton height="25px" width="100px" />
+        <br />
+        <Skeleton height="25px" width="100px" />
+        <br />
+        <Skeleton height="25px" width="100px" />
+      </Skeleton>
+    </Skeleton>
+    // </div>
   ),
 };
 
-import { Utils } from "@/utils";
+
 </script>
 
 <template>
   <div class="test">
-    <p>my txt</p>
-    <p>my txt</p>
-    <p>my txt</p>
+    <div class="block">
+      Block 1
+    </div>
+
+    <div class="block">
+      Block 2
+    </div>
   </div>
 </template>
 
 <script setup lang="tsx">
-import { AnimatedPlaceholder } from "@/components";
+import { AnimatedSkeleton as Skeleton } from "@/components";
+import { Utils } from "@/utils";
 
-await Utils.sleep(10000);
+await Utils.sleep(2000);
 
 defineExpose({});
 </script>
 
 <style lang="scss" scoped>
-.test,
-.test-placeholder {
-  color: blue;
-  background: goldenrod;
+
+.block{
+  @apply h-[100vh] bg-blue-300 text-6xl font-bold text-center leading-[100vh];
 }
 </style>

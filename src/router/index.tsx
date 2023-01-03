@@ -13,7 +13,7 @@ export const routes = [
     name: "home-page",
     component: HomePage,
     meta: {
-      Placeholder: HomePage.Placeholder,
+      Placeholder: HomePage.Skeleton,
     },
   },
 ];

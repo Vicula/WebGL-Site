@@ -1,0 +1,11 @@
+/*
+==============================================================================
+ * @Layer   Utilities
+ * @brief   Creates a utitlity layer on tailwind's base styles
+==============================================================================
+ */
+
+@layer base.utilites {
+  // Adds the mixins layer to the utilities layer
+  @import "./mixins" layer(mixins);
+}

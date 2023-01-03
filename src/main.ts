@@ -4,7 +4,7 @@ import {
     type App as Application,
     type ComponentPublicInstance
 } from "vue";
-import App from "./App.vue";
+import App from "@/App.vue";
 import { router } from "./router";
 import { createPinia } from "pinia";
 const pinia = createPinia();
