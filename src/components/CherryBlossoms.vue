@@ -15,23 +15,11 @@ export default {
 </script>
 
 <template>
-  <canvas id="sakura" />
+  <canvas ref="sakura" id="sakura" />
 </template>
 
 <script setup lang="tsx">
 import { AnimatedSkeleton as Skeleton } from "@/components";
-
-var canvas = document.getElementById("sakura");
-// try {
-//   // makeCanvasFullScreen(canvas);
-//   const gl = canvas.getContext("experimental-webgl");
-// } catch (e) {
-//   alert("WebGL not supported." + e);
-//   console.error(e);
-//   return;
-// }
-
-// window.addEventListener("resize", onResize);
 
 // setViewports();
 // createScene();

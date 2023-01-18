@@ -1,7 +1,7 @@
-Matrix44.createIdentity = function () {
+export const createIdentity = function () {
     return new Float32Array([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]);
 };
-Matrix44.loadProjection = function (m, aspect, vdeg, near, far) {
+const loadProjection = function (m, aspect, vdeg, near, far) {
     var h = near * Math.tan(vdeg * Math.PI / 180.0 * 0.5) * 2.0;
     var w = h * aspect;
 
@@ -25,7 +25,7 @@ Matrix44.loadProjection = function (m, aspect, vdeg, near, far) {
     m[14] = -2.0 * far * near / (far - near);
     m[15] = 0.0;
 };
-Matrix44.loadLookAt = function (m, vpos, vlook, vup) {
+const loadLookAt = function (m, vpos, vlook, vup) {
     var frontv = Vector3.create(vpos.x - vlook.x, vpos.y - vlook.y, vpos.z - vlook.z);
     Vector3.normalize(frontv);
     var sidev = Vector3.create(1.0, 0.0, 0.0);

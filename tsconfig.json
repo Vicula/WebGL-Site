@@ -22,7 +22,8 @@
     "typeRoots": ["./typings"],
     "types": ["reflect-metadata","vite/client"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/API": ["./src/utils/API"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

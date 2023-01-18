@@ -3,23 +3,26 @@
 ==============================================================================
  *
  * @module    AnimatedSkeleton
+ * @version   1.0.0
+ * @since     1.0.0
+ * @author    [Victor C](https://github.com/vicula)
  * @alias     Skeleton
  * @brief     Skeleton UI element used for rendering loading display states
  *            as fallback for other UI elements
  * 
 ==============================================================================
  * 
- * @property {string} [width] - width of skeleton, ex: 100px, 5vh, 2rem
- * @property {string} [height] - height of skeleton, ex: 100px, 5vh, 2rem
- * @property {string} [radius] - border radius of skeleton, ex: 50%, 5px
- * @property {string} [name] - name of parent component for className association,
+ * @prop {string} [width] - width of skeleton, ex: 100px, 5vh, 2rem
+ * @prop {string} [height] - height of skeleton, ex: 100px, 5vh, 2rem
+ * @prop {string} [radius] - border radius of skeleton, ex: 50%, 5px
+ * @prop {string} [name] - name of parent component for className association,
  *  it Is autoset by filename if rendered through the LoadingWrapper
  * 
 ==============================================================================
- * 
- * @see {@link ./LoadingWrapper.vue|LoadingWrapper} This component is primarily
+ *
+ * @see {@link LoadingWrapper} This component is primarily
  * rendered through this component see for more info
- * 
+ *
 ==============================================================================
  */
 export default {};

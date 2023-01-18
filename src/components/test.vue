@@ -30,8 +30,6 @@ export default {
     // </div>
   ),
 };
-
-
 </script>
 
 <template>

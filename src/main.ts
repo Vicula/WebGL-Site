@@ -7,12 +7,14 @@ import {
 import App from "@/App.vue";
 import { router } from "./router";
 import { createPinia } from "pinia";
+import { createI18n } from 'vue-i18n'
+
 const pinia = createPinia();
+const i18n = createI18n({});
+
 
 
 export class AppModule {
-    // @inject() translateService: ITranslateService;
-
     private _app!: Application<Element>;
     public app!: ComponentPublicInstance;
 
@@ -22,6 +24,10 @@ export class AppModule {
 
     public mount(id: string): void {
         this.app = this._app.mount(id);
+    }
+
+    private setIl8n(): void {
+        this._app.use(i18n);
     }
 
     private setRouter(): void {
@@ -35,6 +41,7 @@ export class AppModule {
     private init() {
         this._app = createApp(App);
 
+        this.setIl8n();
         this.setStore();
         this.setRouter();
     }

@@ -23,9 +23,9 @@ export default {
       <LoadingWrapper ref="loadingRef">
         <Test />
       </LoadingWrapper>
-      <LoadingWrapper v-for="item in list" :ref="refWrap.itemRefs">
+      <!-- <LoadingWrapper v-for="item in list" :ref="refWrap.itemRefs">
         <Test :class="'extra' + item" />
-      </LoadingWrapper>
+      </LoadingWrapper> -->
     </div>
     <div class="sentinel" ref="bottomSentinel"></div>
   </div>
@@ -113,44 +113,6 @@ onDeactivated(() => {
   listStartObserver.value && listStartObserver.value.disconnect();
 });
 
-// created() {
-//     //load first page
-//     // this.fetchItemsAPI(0, this.pageCount).then((items) => {
-//     //   this.$nextTick().then(() => {
-//     //     let scrollContainer = this.$refs["scrollContainer"];
-//     //     scrollContainer.scrollTop = scrollContainer.scrollHeight;
-//     //     //scrolldown
-//     //     this.$nextTick().then(() => {
-//     //       //setup up observer after initial list loaded and scrolled all the way to the bottom
-//     //       this.setUpInterSectionObserver();
-//     //     });
-//     //   });
-//     // });
-//   },
-// destroyed() {
-//   if (this.listEndObserver) {
-//     this.listEndObserver.disconnect();
-//   }
-// },
-// data() {
-//   return {
-//     list: [],
-//     /**
-//      * if we extracted infinite-scroll to a generic component,
-//      * it would need just these props.loadingMore,canLoadMore and the list
-//      */
-
-//     isLoadingMore: false,
-//     canLoadMore: true, //list has to end at some point
-
-//     //extra stuff
-//     initialLoad: true, //initial load state ,if you want  to use a different BIGGER loading animation  etc
-//     pageNumber: 0, //canLoadMore is set to false when last page is reached
-//     pageCount: 10,
-//   };
-// },
-// methods: {
-
 // async loadMore() {
 //   try {
 //     this.isLoadingMore = true;
@@ -171,33 +133,6 @@ onDeactivated(() => {
 //   }
 // },
 
-//   fetchItemsAPI(pageNumber, pageCount) {
-//     //assume 10 items per page
-
-//     return new Promise((res, rej) => {
-//       //page number is always 1,2,...10
-//       //list items are generated backwards
-//       let data = [];
-//       for (
-//         let i = 100 - pageNumber * 10;
-//         i > 100 - pageNumber * 10 - 10;
-//         i--
-//       ) {
-//         data.push({
-//           name: "Item " + i,
-//         });
-//       }
-
-//       setTimeout(() => {
-//         if (pageNumber < pageCount) {
-//           res(data.reverse());
-//         } else {
-//           rej(new Error("No more items to load"));
-//         }
-//       }, 1000);
-//     });
-//   },
-// },
 
 onMounted(() => {
   setUpInterSectionObserver();

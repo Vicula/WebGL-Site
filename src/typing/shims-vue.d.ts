@@ -1,13 +1,13 @@
+// Top level import to merge types
+// instead of overwriting them
+// import Vue, {
+//   type DefineComponent
+// } from "vue";
 
 declare module "*.vue" {
   import type { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, never>;
   export default component;
-}
-declare module "*.vue" {
-  import Vue from "vue";
-  const value: Vue.VueConstructor<Vue>;
-  export default value;
 }
 
 declare module "@/components/*" {

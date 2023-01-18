@@ -1,1 +1,1 @@
-export * from "./repositories";
+export type { IRenderTarget } from "./IRenderTarget"

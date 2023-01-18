@@ -2,6 +2,7 @@
 //precision mediump float;
 precision highp float;
 #endif
+
 uniform sampler2D uSrc;
 uniform vec2 uDelta;
 uniform vec4 uBlurDir; //dir(x, y), stride(z, w)
