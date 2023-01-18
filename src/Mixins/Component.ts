@@ -1,7 +1,7 @@
 /**
  ==============================================================================
  * @file   Component.ts
- * @brief   Component mixin used to extend all other components
+ * @desc   Component mixin used to extend all other components
  ==============================================================================
  * @attention
  *

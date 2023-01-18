@@ -2,21 +2,22 @@
 /**
 ==============================================================================
  *
- * @module    AnimatedSkeleton
+ * @name      AnimatedSkeleton
  * @version   1.0.0
  * @since     1.0.0
  * @author    [Victor C](https://github.com/vicula)
  * @alias     Skeleton
- * @brief     Skeleton UI element used for rendering loading display states
+ * @desc     Skeleton UI element used for rendering loading display states
  *            as fallback for other UI elements
  * 
 ==============================================================================
  * 
+ * @prop {string} [name] - name of parent component for className association,
+ *                         it Is autoset by filename if rendered through 
+ *                         the LoadingWrapper
  * @prop {string} [width] - width of skeleton, ex: 100px, 5vh, 2rem
  * @prop {string} [height] - height of skeleton, ex: 100px, 5vh, 2rem
  * @prop {string} [radius] - border radius of skeleton, ex: 50%, 5px
- * @prop {string} [name] - name of parent component for className association,
- *  it Is autoset by filename if rendered through the LoadingWrapper
  * 
 ==============================================================================
  *

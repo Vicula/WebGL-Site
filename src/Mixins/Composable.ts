@@ -1,7 +1,7 @@
 /**
  ==============================================================================
  * @file   Composable.ts
- * @brief   composable mixin used to extend all other composables
+ * @desc   composable mixin used to extend all other composables
  ==============================================================================
  * @attention
  *

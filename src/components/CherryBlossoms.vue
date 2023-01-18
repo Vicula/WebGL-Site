@@ -1,35 +1,15 @@
-<script lang="tsx">
-/**
-==============================================================================
- *
- * @module  CherryBlossoms
- * @brief   HTML Canvas component used to render and display a WebGL animated
- *          background of CherryBlossoms using GLSL shaders to add lights,
- *          blur and general Post Processing finishing
- *
- ==============================================================================
- */
-export default {
-  Skeleton: <Skeleton />,
-};
-</script>
+
 
 <template>
-  <canvas ref="sakura" id="sakura" />
+  <canvas ref="canvasRef" />
+  <h1>HEY There</h1>
 </template>
 
 <script setup lang="tsx">
-import { AnimatedSkeleton as Skeleton } from "@/components";
+// import { AnimatedSkeleton as Skeleton } from "@/components";
+import { useCanvas } from "@/composables/canvas/Canvas";
 
-// setViewports();
-// createScene();
-// initScene();
-
-// timeInfo.start = new Date();
-// timeInfo.prev = timeInfo.start;
-// animate();
-
-defineExpose({});
+const { canvasRef } = useCanvas();
 </script>
 
 <style lang="scss" scoped>

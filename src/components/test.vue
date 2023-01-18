@@ -2,8 +2,8 @@
 /**
 ==============================================================================
  *
- * @module    Test
- * @brief   Wrapper component used to embed loading state functionality and
+ * @name    Test
+ * @desc   Wrapper component used to embed loading state functionality and
  *          fallback displays
  *
  ==============================================================================

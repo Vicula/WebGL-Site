@@ -1,7 +1,7 @@
 /**
  ==============================================================================
  * @file   Page.ts
- * @brief   Page mixin used to extend all other Pages
+ * @desc   Page mixin used to extend all other Pages
  ==============================================================================
  * @attention
  *

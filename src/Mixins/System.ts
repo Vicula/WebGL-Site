@@ -1,7 +1,7 @@
 /**
  ==============================================================================
  * @file   System.ts
- * @brief System is instantiated as a function to pass in args
+ * @desc System is instantiated as a function to pass in args
  *      and configure the returned class to operate on lifecycle hooks.
  *      used to extend all other systems
  ==============================================================================

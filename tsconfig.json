@@ -20,7 +20,7 @@
     "sourceRoot": "/",
     "baseUrl": ".",
     "typeRoots": ["./typings"],
-    "types": ["reflect-metadata","vite/client"],
+    "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
       "@/API": ["./src/utils/API"]

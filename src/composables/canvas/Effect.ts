@@ -1,52 +1,114 @@
+import commonVert from '@/shaders/common.vert';
+import backgroundFrag from "@/shaders/background.frag";
+import brightBufFrag from "@/shaders/brightBuf.frag";
+import dirBlurFrag from "@/shaders/dirBlur.frag";
+import ppFinalFrag from "@/shaders/ppFinal.frag";
+import ppFinalVert from "@/shaders/ppFinal.vert";
+import { Ref } from "@/API";
+import type { IRenderTarget } from "@/types";
+import { createShader, useShader, unuseShader, type IWebGLProgram } from './Shader';
+
+
+interface IEffectProgram {
+    program: IWebGLProgram | null;
+    buffer: WebGLBuffer | null;
+    dataArray: Float32Array | null;
+}
+
+function createEffectProgram(gl: Ref<WebGLRenderingContext>, vtxsrc: string, frgsrc: string, exunifs: string[] | null, exattrs: string[] | null) {
+    const
+        ret: IEffectProgram = {
+            program: null,
+            buffer: null,
+            dataArray: null
+        },
+        unifs = ['uResolution', 'uSrc', 'uDelta'],
+        attrs = ['aPosition'];
+
+    exunifs && unifs.push(...exunifs);
+    exattrs && attrs.push(...exattrs);
+
+    ret.program = createShader(gl, vtxsrc, frgsrc, unifs, attrs);
+    if (ret.program) {
+        useShader(gl, ret.program);
+
+        ret.dataArray = new Float32Array([
+            -1.0, -1.0,
+            1.0, -1.0,
+            -1.0, 1.0,
+            1.0, 1.0
+        ]);
+        ret.buffer = gl.value.createBuffer();
+        gl.value.bindBuffer(gl.value.ARRAY_BUFFER, ret.buffer);
+        gl.value.bufferData(gl.value.ARRAY_BUFFER, ret.dataArray, gl.value.STATIC_DRAW);
+
+        gl.value.bindBuffer(gl.value.ARRAY_BUFFER, null);
+        unuseShader(gl, ret.program);
+
+        return ret;
+    }
+
+    return null;
+}
+
+
 // basic usage
 // useEffect(prog, srctex({'texture':texid, 'dtxArray':(f32)[dtx, dty]})); //basic initialize
 // gl.uniform**(...); //additional uniforms
 // drawEffect()
 // unuseEffect(prog)
 // TEXTURE0 makes src
-export function useEffect(gl:WebGLRenderingContext,fxobj, srctex) {
+export function useEffect(gl: Ref<WebGLRenderingContext>, fxobj: IEffectProgram, srctex: IRenderTarget) {
     var prog = fxobj.program;
-    useShader(prog);
-    gl.uniform3fv(prog.uniforms.uResolution, renderSpec.array);
 
-    if (srctex != null) {
-        gl.uniform2fv(prog.uniforms.uDelta, srctex.dtxArray);
-        gl.uniform1i(prog.uniforms.uSrc, 0);
+    if (prog) {
+        useShader(gl, prog);
+        // gl.value.uniform3fv(prog.uniforms.uResolution, renderSpec.array);
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, srctex.texture);
+        if (srctex != null) {
+            gl.value.uniform2fv(prog.uniforms.uDelta, srctex.dtxArray);
+            gl.value.uniform1i(prog.uniforms.uSrc, 0);
+
+            gl.value.activeTexture(gl.value.TEXTURE0);
+            gl.value.bindTexture(gl.value.TEXTURE_2D, srctex.texture);
+        }
     }
+
 }
-function drawEffect(gl: WebGLRenderingContext,fxobj) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, fxobj.buffer);
-    gl.vertexAttribPointer(fxobj.program.attributes.aPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+function drawEffect(gl: Ref<WebGLRenderingContext>, fxobj: IEffectProgram) {
+    gl.value.bindBuffer(gl.value.ARRAY_BUFFER, fxobj.buffer);
+
+    fxobj.program && gl.value.vertexAttribPointer(fxobj.program.attributes.aPosition, 2, gl.value.FLOAT, false, 0, 0);
+
+    gl.value.drawArrays(gl.value.TRIANGLE_STRIP, 0, 4);
 }
-function unuseEffect(fxobj) {
-    unuseShader(fxobj.program);
+function unuseEffect(gl: Ref<WebGLRenderingContext>, fxobj: IEffectProgram) {
+    fxobj.program && unuseShader(gl, fxobj.program);
 }
 
-var effectLib = {};
-function createEffectLib() {
 
-    var vtxsrc, frgsrc;
-    //common
-    var cmnvtxsrc = document.getElementById("fx_common_vsh").textContent;
 
-    //background
-    frgsrc = document.getElementById("bg_fsh").textContent;
-    effectLib.sceneBg = createEffectProgram(cmnvtxsrc, frgsrc, ['uTimes'], null);
+const effectLib: IEffectLib = {
+    sceneBg: null,
+    mkBrightBuf: null,
+    dirBlur: null,
+    finalComp: null
+}
 
+interface IEffectLib {
+    sceneBg: IEffectProgram | null;
+    mkBrightBuf: IEffectProgram | null;
+    dirBlur: IEffectProgram | null;
+    finalComp: IEffectProgram | null;
+}
+
+function createEffectLib(gl: Ref<WebGLRenderingContext>) {
+    // background
+    effectLib.sceneBg = createEffectProgram(gl, commonVert, backgroundFrag, ['uTimes'], null);
     // make brightpixels buffer
-    frgsrc = document.getElementById("fx_brightbuf_fsh").textContent;
-    effectLib.mkBrightBuf = createEffectProgram(cmnvtxsrc, frgsrc, null, null);
-
-    // direction blur
-    frgsrc = document.getElementById("fx_dirblur_r4_fsh").textContent;
-    effectLib.dirBlur = createEffectProgram(cmnvtxsrc, frgsrc, ['uBlurDir'], null);
-
-    //final composite
-    vtxsrc = document.getElementById("pp_final_vsh").textContent;
-    frgsrc = document.getElementById("pp_final_fsh").textContent;
-    effectLib.finalComp = createEffectProgram(vtxsrc, frgsrc, ['uBloom'], null);
+    effectLib.mkBrightBuf = createEffectProgram(gl, commonVert, brightBufFrag, null, null);
+    // directional blur
+    effectLib.dirBlur = createEffectProgram(gl, commonVert, dirBlurFrag, ['uBlurDir'], null);
+    // final composite
+    effectLib.finalComp = createEffectProgram(gl, ppFinalVert, ppFinalFrag, ['uBloom'], null);
 }

@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import {
     createApp,
     type App as Application,
@@ -7,10 +6,8 @@ import {
 import App from "@/App.vue";
 import { router } from "./router";
 import { createPinia } from "pinia";
-import { createI18n } from 'vue-i18n'
 
 const pinia = createPinia();
-const i18n = createI18n({});
 
 
 
@@ -26,10 +23,6 @@ export class AppModule {
         this.app = this._app.mount(id);
     }
 
-    private setIl8n(): void {
-        this._app.use(i18n);
-    }
-
     private setRouter(): void {
         this._app.use(router);
     }
@@ -41,7 +34,6 @@ export class AppModule {
     private init() {
         this._app = createApp(App);
 
-        this.setIl8n();
         this.setStore();
         this.setRouter();
     }
