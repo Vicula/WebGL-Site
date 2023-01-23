@@ -19,7 +19,7 @@ export function compileShader(gl: Ref<WebGLRenderingContext>, shtype: number, sh
     return null;
 }
 
-interface IWebGLProgram extends WebGLProgram {
+export interface IWebGLProgram extends WebGLProgram {
     uniforms: Record<string, WebGLUniformLocation | null>;
     attributes: Record<string, number>;
 }

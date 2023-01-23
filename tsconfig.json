@@ -19,7 +19,7 @@
     "skipLibCheck": true,
     "sourceRoot": "/",
     "baseUrl": ".",
-    "typeRoots": ["./typings"],
+    "typeRoots": ["./shims"],
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],

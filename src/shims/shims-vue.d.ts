@@ -10,7 +10,7 @@ declare module "*.vue" {
   export default component;
 }
 
-declare module "@/components/*" {
+declare module "@/components/**/*" {
   import type { DefineComponent } from "vue";
   const component: DefineComponent<{}, {}, never>;
   export default component;

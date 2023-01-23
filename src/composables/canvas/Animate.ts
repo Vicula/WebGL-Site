@@ -1,5 +1,5 @@
 var animating = true;
-function toggleAnimation(elm) {
+export function toggleAnimation(elm) {
     animating ^= true;
     if (animating) animate();
     if (elm) {

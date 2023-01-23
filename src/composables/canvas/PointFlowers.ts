@@ -1,4 +1,4 @@
-export function createPointFlowers() {
+export function createPointFlowers(gl: WebGLRenderingContext) {
     // get point sizes
     var prm = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
     renderSpec.pointSize = { 'min': prm[0], 'max': prm[1] };

@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="tsx">
-// import { AnimatedSkeleton as Skeleton } from "@/components";
 import { useCanvas } from "@/composables/canvas/Canvas";
 
 const { canvasRef } = useCanvas();

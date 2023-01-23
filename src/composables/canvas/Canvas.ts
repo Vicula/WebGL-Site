@@ -19,7 +19,7 @@ import { useEventListener } from "../EventListener";
  *
  ==============================================================================
  *
- * @returns {IUseCanvas} ref and utility functions for configuring and syncing
+ * @returns {ICanvas} ref and utility functions for configuring and syncing
  *                       an HTMLCanvasElement
  * 
  ==============================================================================
@@ -40,7 +40,7 @@ import { useEventListener } from "../EventListener";
  * 
  ==============================================================================
  */
-export function useCanvas(): IUseCanvas {
+export function useCanvas(): ICanvas {
     let mountCallback: null | ((canvasRef: Ref<HTMLCanvasElement>) => void) = null;
 
     const
@@ -258,7 +258,7 @@ export function useCanvas(): IUseCanvas {
     }
 }
 
-interface IUseCanvas {
+interface ICanvas {
     /**
      * @constant canvasRef
      * @module  useCanvas
