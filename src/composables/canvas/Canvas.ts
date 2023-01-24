@@ -1,10 +1,12 @@
-import { Ref, ref, reactive, watch } from "@/API";
+import { Ref, ref, watch } from "@/API";
+import type { ICanvas } from "@/types";
 import { setViewports } from "./Viewports";
 import { useEventListener } from "../EventListener";
+import { useRegistry } from "../ecs/Registry";
 
 /**
-==============================================================================
- *
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * 
  * @function useCanvas
  * @public
  * @version 1.0.0
@@ -17,12 +19,12 @@ import { useEventListener } from "../EventListener";
  * 
  * @summary Composable used to init and sync a canvasRef
  *
- ==============================================================================
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  *
  * @returns {ICanvas} ref and utility functions for configuring and syncing
  *                       an HTMLCanvasElement
  * 
- ==============================================================================
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * 
  * @example Using and setting the canvas
  * 
@@ -38,153 +40,54 @@ import { useEventListener } from "../EventListener";
  * </script>
  * ```
  * 
- ==============================================================================
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  */
 export function useCanvas(): ICanvas {
-    let mountCallback: null | ((canvasRef: Ref<HTMLCanvasElement>) => void) = null;
-
     const
-        /**
-         * @constant canvasRef
-         * @public
-         * @desc    Ref to an HTMLCanvasElement
-         ------------------------------------------------------------------------------ 
-        */
-        canvasRef = ref<HTMLCanvasElement | null>(null),
+        __canvasRef = ref<HTMLCanvasElement | null>(null),
         __gl = ref<WebGLRenderingContext | null>(null),
+        __mountCallback = ref<((canvasRef: Ref<HTMLCanvasElement>) => void) | null>(null),
         __isUsingFullscreen = ref(false),
         __sceneStandBy = ref(false),
-        __timeInfo = reactive({
-            'start': new Date(), 'prev': new Date(),
-            'delta': 0, 'elapsed': 0 // Number(sec)
-        }),
+        __isRunning = ref(false),
+        __isDebug = ref(false),
+        // TODO: make the registry
+        // __registry = ref(null),
+        // TODO: make an asset store, it will hold textures and shaders
+        // __assetStore = ref(null),
+        // TODO: move timeInfo to a more relevant location
+        // __timeInfo = reactive({
+        //     'start': new Date(), 'prev': new Date(),
+        //     'delta': 0, 'elapsed': 0 // Number(sec)
+        // }),
 
         /**
-         * @function onMount
-         * @module  useCanvas
-         * @public
-         * @desc    exposed utility function used as a pass through for setting an
-         *          onMounted callback function.
-         ------------------------------------------------------------------------------  
-         */
-        onMount =
-            (callback: () => void) =>
-                mountCallback = callback,
-
-        /**
-         * @function useFullscreen
-         * @module  useCanvas
-         * @public
-         * @desc    exposed utility function used to set the canvas to fullscreen
-         ------------------------------------------------------------------------------ 
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        * @Lifecycle
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         */
-        useFullscreen =
-            () => __isUsingFullscreen.value = true,
-
-        /**
-         * @function setup
-         * @internal
-         * @desc    lifecycle function used internally for finishing canvas
-         *          configuration and setup
-         ------------------------------------------------------------------------------
-         */
-        setup =
-            (gl: Ref<WebGLRenderingContext>) => {
-                setViewports(gl);
-                /**
-                 * TODO: wrap up scene creation
-                 */
-                // createScene();
-                // initScene();
-
-                __timeInfo.start = new Date();
-                __timeInfo.prev = __timeInfo.start;
-            },
-
-        /**
-         * @function stopWatch
-         * @internal
-         * @desc    house keeping utility function used to stop the watcher created
-         *          here. We are watching the canvasRef and waiting for the element 
-         *          to be truthy and the prevElement is falsy to run the whenMounted
-         *          hook and set the canvasRef to the element
-         ------------------------------------------------------------------------------ 
-         */
-        stopWatch =
-            watch(canvasRef, (element, prevElement) => {
-                /**
-                 *  run a type check on `element` to see if its been set/mounted
-                 *  the type check is for HTMLCanvasElement
-                 */
-                element as unknown instanceof HTMLCanvasElement
-                    ? (
-                        /**
-                         *  when/if the `element` type check passes we set the canvasRef
-                         *  to the current version of the canvas element
-                         */
-                        (canvasRef.value = element) && (
-                            /**
-                             *  if we have a mountCallback function and the `prevElement`
-                             *  is falsy then run the callback with a param of the canvasRef
-                             */
-                            !(!!prevElement) && whenMounted()
-                        )
-                    )
-                    /**
-                     *  if the element isnt of HTMLCanavasElement type
-                     *  we simply set the ref as null for house keeping
-                     */
-                    : (canvasRef.value = null);
-            }),
-
         /**
          * @function whenMounted
          * @internal
          * @desc    internal lifecycle hook of the canvas composable fired when the 
          *          canvasRef is no longer falsy. We use this hook to attempt to establish
-         *          the WebGLRenderingContext and then run the mounted callback and take 
-         *          care of some house keeping.
+         *          the WebGLRenderingContext and if its succesful we continue with setup
+         *          otherwise the try catch will return an error.
          ------------------------------------------------------------------------------ 
          */
-        whenMounted =
+        __whenMounted =
             () => {
                 try {
-                    /**
-                     *  Check to see if we have a Canvas Ref
-                     *  if truthy, attempt to set the WebGLContext if this fails the try/catch will trigger
-                     */
-                    !!canvasRef.value &&
-                        (__gl.value = <WebGLRenderingContext | null>canvasRef.value.getContext("experimental-webgl"));
+                    // Check to see if we have a Canvas Ref (should always be truthy but check for TS)
+                    // if truthy, attempt to set the WebGLContext if this fails the try/catch will trigger.
+                    !!__canvasRef.value &&
+                        ((__gl.value = <WebGLRenderingContext | null>__canvasRef.value.getContext("experimental-webgl"))
+                            // if setting is successful we continue with init()
+                            && __init());
 
-                    /**
-                     *  call the mountCallback if it is set
-                     */
-                    !!mountCallback && mountCallback(canvasRef as Ref<HTMLCanvasElement>);
-
-                    /** 
-                     *  if we have fullscreen set running `setFullscreen` to 
-                     *  update the canvas width/height
-                     */
-                    __isUsingFullscreen && setFullscreen();
-
-                    /**
-                     *  set an event listener on the window resize
-                     *  event to redraw the canvas with new size
-                     */
-                    useEventListener(window, "resize", onResize);
-
-                    /**
-                     *  stop the watcher we used to set the canvasRef
-                     *  when it finally mounted
-                     */
-                    stopWatch();
-
-                    /**
-                     *  If the WebGLRenderingContext was sucessfully created we continue
-                     *  with configuring the canvas by calling the setup function for the canvas
-                     */
-                    !!__gl.value && setup(__gl as Ref<WebGL2RenderingContext>);
-
+                    // stop the watcher we used to set the canvasRef
+                    // since its mounted on failure or success
+                    __unWatch();
                 } catch (e) {
                     alert("WebGL not supported." + e);
                     console.error(e);
@@ -200,25 +103,97 @@ export function useCanvas(): ICanvas {
          *          viewports and redraw the scene.
          ------------------------------------------------------------------------------ 
          */
-        onResize =
+        __onResize =
             () => {
-                /** 
-                 *  if we have fullscreen set running `setFullscreen` to 
-                 *  update the canvas width/height
-                */
-                __isUsingFullscreen && setFullscreen();
+                // if we have fullscreen set running `setFullscreen` to 
+                // update the canvas width/height
+                __isUsingFullscreen.value && __setFullscreen();
 
-                /** 
-                 *  updating WebGl viewport settings if the WebGL context
-                 *  isnt undefined
-                */
+                // updating WebGl viewport settings if the WebGL context
+                // isnt undefined
                 __gl.value && setViewports(__gl as Ref<WebGLRenderingContext>);
 
-                /** 
-                 *  reinit the scene after changing all the viewport settings
-                 *  TODO: Wrap up this functionality
-                */
+                // reinit the scene after changing all the viewport settings
+                // TODO: Wrap up this functionality
                 // __sceneStandBy.value && initScene();
+            },
+
+        /**
+         * @function unWatch
+         * @internal
+         * @desc    house keeping utility function used to stop the watcher created
+         *          here. We are watching the canvasRef and waiting for the element 
+         *          to be truthy and the prevElement is falsy to run the whenMounted
+         *          hook and set the canvasRef to the element
+         ------------------------------------------------------------------------------ 
+        */
+        __unWatch =
+            watch(__canvasRef, (element, prevElement) => {
+                // run a type check on `element` to see if its been set/mounted
+                // the type check is for HTMLCanvasElement
+                element as unknown instanceof HTMLCanvasElement
+                    ? (
+                        // when/if the `element` type check passes we set the canvasRef
+                        // to the current version of the canvas element
+                        (__canvasRef.value = element) && (
+                            // and if the `prevElement` is falsy we then run the mounted lifecycle
+                            // TODO: handle failure of WebGLContext
+                            !(!!prevElement) && __whenMounted()
+                        )
+                    )
+                    // if the element isnt of HTMLCanavasElement type
+                    // we simply set the ref as null for house keeping
+                    : (__canvasRef.value = null);
+            }),
+
+        /**
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        * @Configuration
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        */
+        /**
+         * @function init
+         * @internal
+         * @desc    lifecycle function used internally for finishing canvas
+         *          configuration and setup
+         ------------------------------------------------------------------------------
+        */
+        __init = () => {
+            // we finally call the mounted callback, if set, after ensuring canvas and WebGL
+            // context were sucessfully set
+            !!__mountCallback.value && __mountCallback.value(__canvasRef as Ref<HTMLCanvasElement>);
+
+            // if we have opted to use fullscreen we run `setFullscreen` to 
+            // update the canvas width/height
+            __isUsingFullscreen && __setFullscreen();
+
+            // set an event listener on the window resize
+            // event to redraw the canvas with new size             
+            useEventListener(window, "resize", __onResize);
+
+            // If the WebGLRenderingContext was sucessfully created we continue
+            // with configuring the canvas by calling the setup function for the canvas             
+            !!__gl.value && __setup(__gl as Ref<WebGL2RenderingContext>);
+        },
+
+        /**
+         * @function setup
+         * @internal
+         * @desc    lifecycle function used internally for finishing canvas
+         *          configuration and setup
+         ------------------------------------------------------------------------------
+         */
+        __setup =
+            (gl: Ref<WebGLRenderingContext>) => {
+                setViewports(gl);
+
+                // TODO: wrap up scene creation
+                // createScene();
+                // initScene();
+
+                // TODO: move timeinfo into ECS or Registry
+                // __timeInfo.start = new Date();
+                // __timeInfo.prev = __timeInfo.start;
             },
 
         /**
@@ -227,61 +202,34 @@ export function useCanvas(): ICanvas {
          * @desc    house keeping function used to actually set the canvas to fullscreen
          ------------------------------------------------------------------------------ 
          */
-        setFullscreen =
+        __setFullscreen =
             () => {
-                /**
-                 * Get the biggest height and width value from the document
-                 * to set the canvas as fullscreen
-                 */
+                // Get the biggest height and width value from the document
+                // to set the canvas as fullscreen
                 const b = document.body,
                     d = document.documentElement,
                     fullw = Math.max(b.clientWidth, b.scrollWidth, d.scrollWidth, d.clientWidth),
                     fullh = Math.max(b.clientHeight, b.scrollHeight, d.scrollHeight, d.clientHeight);
 
-                /**
-                 * update the canvas's height and width
-                 */
-                !!canvasRef.value && (
-                    (canvasRef.value.width = fullw) &&
-                    (canvasRef.value.height = fullh)
+                // update the canvas's height and width
+                !!__canvasRef.value && (
+                    (__canvasRef.value.width = fullw) &&
+                    (__canvasRef.value.height = fullh)
                 );
-            },
-        render =
-            () => {
-                // renderScene();
             };
 
+    /**
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    * @Exposed
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    */
     return {
-        canvasRef,
-        useFullscreen,
-        onMount
+        canvasRef: __canvasRef,
+        // TODO: Fullscreen can be moved to its own composite
+        useFullscreen:
+            () => __isUsingFullscreen.value = true,
+        onMount:
+            (callback: () => void) =>
+                __mountCallback.value = callback
     }
-}
-
-interface ICanvas {
-    /**
-     * @constant canvasRef
-     * @module  useCanvas
-     * @public
-     * @desc    Ref to an HTMLCanvasElement
-    ------------------------------------------------------------------------------  
-     */
-    canvasRef: Ref<HTMLCanvasElement | null>;
-    /**
-     * @function useFullscreen
-     * @module  useCanvas
-     * @public
-     * @desc    exposed utility function used to set the canvas to fullscreen
-     ------------------------------------------------------------------------------ 
-     */
-    useFullscreen: () => void;
-    /**
-     * @function onMount
-     * @module  useCanvas
-     * @public
-     * @desc    exposed utility function used as a pass through for setting an
-     *          onMounted callback function.
-     ------------------------------------------------------------------------------ 
-     */
-    onMount: (callback: () => void) => () => void;
 }

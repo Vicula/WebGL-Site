@@ -1,21 +1,15 @@
-export function usePool<T>() {
-    const
-        __data: T[] = [];
+import type { IPool } from "@/types";
 
+export function usePool<T>(): IPool<T> {
     const
-        isEmpty = () => __data.length === 0,
-        size = () => __data.length,
-        clear = () => __data.length = 0,
-        add = (obj: T) => __data.push(obj),
-        set = (index: number, obj: T) => __data[index] = obj,
-        get = (index: number) => __data[index];
+        __data: Map<string, T> = new Map();
 
     return {
-        isEmpty,
-        size,
-        clear,
-        add,
-        set,
-        get
+        isEmpty: () => !!(__data.size === 0),
+        size: () => __data.size,
+        clear: () => __data.clear(),
+        add: (id: string, obj: T) => __data.set(id, obj),
+        set: (index: string, obj: T) => __data.set(index, obj),
+        get: (index: string) => __data.get(index)
     }
 }

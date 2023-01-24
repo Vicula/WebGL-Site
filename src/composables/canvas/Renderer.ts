@@ -1,14 +1,6 @@
 import { Ref } from "@/API"
+import type { IRenderTarget } from "@/types";
 
-interface IRenderTarget {
-    width: number;
-    height: number;
-    sizeArray: Float32Array;
-    dtxArray: Float32Array;
-    frameBuffer: WebGLFramebuffer | null;
-    renderBuffer: WebGLRenderbuffer | null;
-    texture: WebGLTexture | null;
-}
 
 export function deleteRenderTarget(gl: Ref<WebGLRenderingContext>, rt: IRenderTarget) {
     gl.value.deleteFramebuffer(rt.frameBuffer);

@@ -1,11 +1,52 @@
-export function useEntity(id: number, registry: unknown) {
-    const
-        __id = id,
-        getId = () => { },
-        destory = () => { },
-        addComposable = () => { },
-        removeComposable = () => { },
-        hasComposable = () => { },
-        getComposable = () => { };
+import type { IEntity } from "@/types";
 
+export function useEntityRegistry() {
+    const
+        __maxEntities = 32768, // some large arbitrary number
+        __entitiesToAdd: IEntity[] = [],
+        __entitiesToRemove: IEntity[] = [],
+        __entitySignatures = new Map(),
+        __freeIds: number[] = [],
+        __newEntity = (id: number): IEntity => {
+            const
+                __id = id;
+
+            return {
+                getId: () => __id,
+                destory: () => { },
+                addComposable: () => { },
+                removeComposable: () => { },
+                hasComposable: () => { },
+                getComposable: () => { },
+                setRegistry: () => { }
+            }
+        };
+
+    return {
+        useEntity: () => __newEntity(__freeIds.shift() ?? (__entitySignatures.size || 1)),
+        addEntity: () =>
+            __entitiesToAdd.push(
+                __newEntity(
+                    __freeIds.shift() ?? (__entitySignatures.size || 1)
+                )),
+        // getEntity: () => { },
+        removeEntity: (ent: IEntity) => __entitiesToRemove.push(ent),
+        onTick: (sys: unknown) => {
+            // for (auto entity : entitiesToBeAdded)
+            // {
+            //     AddEntityToSystems(entity);
+            // }
+            __entitiesToAdd.length = 0;
+
+            // for (auto entity : entitiesToBeKilled)
+            // {
+            //     RemoveEntityFromSystems(entity);
+            //     entityComponentSignatures[entity.GetId()].reset();
+            //     freeIds.push_back(entity.GetId());
+            // }
+            __entitiesToRemove.length = 0;
+        }
+    }
 }
+
+

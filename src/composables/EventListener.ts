@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from "@/API"
 
 export function useEventListener(target: HTMLElement | Window & typeof globalThis, event: string, callback: EventListener) {
     // if you want, you can also make this
