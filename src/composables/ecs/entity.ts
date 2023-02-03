@@ -1,7 +1,9 @@
 import type { IEntity } from "@/types";
+import { ref } from "@/API";
 
 export function useEntityRegistry() {
     const
+        __cmpRegistry = ref<unknown | null>(null),
         __maxEntities = 32768, // some large arbitrary number
         __entitiesToAdd: IEntity[] = [],
         __entitiesToRemove: IEntity[] = [],
@@ -24,13 +26,15 @@ export function useEntityRegistry() {
 
     return {
         useEntity: () => __newEntity(__freeIds.shift() ?? (__entitySignatures.size || 1)),
-        addEntity: () =>
+        addEntity: () => {
             __entitiesToAdd.push(
                 __newEntity(
                     __freeIds.shift() ?? (__entitySignatures.size || 1)
-                )),
+                ))
+        },
         // getEntity: () => { },
         removeEntity: (ent: IEntity) => __entitiesToRemove.push(ent),
+        setComposableRegistry: (cmpRegistry: unknown) => __cmpRegistry.value = cmpRegistry,
         onTick: (sys: unknown) => {
             // for (auto entity : entitiesToBeAdded)
             // {

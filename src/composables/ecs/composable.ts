@@ -14,7 +14,7 @@ export function useComposableRegistry() {
     const
         __composablePools = usePool(),
         addComposable = <TArgs>(entity: unknown, ...args: TArgs[]) => {
-
+            
             
             // // TODO get composableID
             // // TODO get entityID
